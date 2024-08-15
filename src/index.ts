@@ -1,28 +1,15 @@
-import { client, xml, jid } from "@xmpp/client";
+import {getAlgorithm} from './utils/input';
 
-console.log("Hello via Bun!");
+const main = async () => {
+    const algorithm = await getAlgorithm(); // Always resolves as 'flooding' or 'link-state'
 
-
-interface ITest {
-    a: number,
-    b: number
+    if (algorithm === 'flooding') {
+        // Run flooding algorithm
+    } else if (algorithm === 'link-state') {
+        // Run link-state algorithm
+    }
 }
 
-enum TestEnum {
-    A = 1,
-    B = 2
-}
-
-
-const test = ({a, b}:ITest) => {
-    return a + b
-}
-
-console.log(
-    test(
-        {
-            a: TestEnum.A,
-            b: TestEnum.B
-        } as ITest
-    )
-)
+main().then(() => {
+    process.exit();
+});
