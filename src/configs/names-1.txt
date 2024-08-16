@@ -1,0 +1,16 @@
+{
+    "type":"names",
+    "config":{
+        "A":"test-a@alumchat.lol",
+        "B":"test-b@alumchat.lol",
+        "C":"test-c@alumchat.lol",
+        "D":"test-d@alumchat.lol",
+        "E":"test-e@alumchat.lol",
+        "F":"test-f@alumchat.lol",
+        "G":"test-g@alumchat.lol",
+        "H":"test-h@alumchat.lol",
+        "I":"test-i@alumchat.lol"
+    }
+}
+
+

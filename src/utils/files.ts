@@ -12,6 +12,16 @@ const findTopologyFile = (dir: string): string | null => {
     return null;
 };
 
+const findNamesFile = (dir: string): string | null => {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        if (file.startsWith('names-') && file.endsWith('.txt')) {
+            return path.join(dir, file);
+        }
+    }
+    return null;
+}
+
 const parseTopology = (path: string): { [key: string]: Node } => {
     const data = fs.readFileSync(path, 'utf8')  // Reads the file
     const config = JSON.parse(data).config  // Parses the JSON data
@@ -32,15 +42,22 @@ const parseTopology = (path: string): { [key: string]: Node } => {
         });
     }
 
-    for (const nodeName in nodes) {
-        console.log(nodes[nodeName].toString());
-    }
-
     return nodes
+}
+
+const parseNames = (path: string, nodes: { [key: string]: Node }): void => {
+    const data = fs.readFileSync(path, 'utf8')  // Reads the file
+    const config = JSON.parse(data).config  // Parses the JSON data
+
+    for (const nodeName in config) {
+        nodes[nodeName].xmpp_user = config[nodeName]
+    }
 }
 
 
 export {
     findTopologyFile,
+    findNamesFile,
     parseTopology,
+    parseNames
 }

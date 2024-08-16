@@ -11,7 +11,7 @@ class Node {
 
     toString(): string {
         const neighborNames = this.neighbors.map(neighbor => neighbor.name).join(', ');
-        return `Node(name: ${this.name}, neighbors: [${neighborNames}])`;
+        return `Node(name: ${this.name}, neighbors: [${neighborNames}]${this.xmpp_user ? `, xmpp_user: ${this.xmpp_user}` : ''})`;
     }
 }
 
