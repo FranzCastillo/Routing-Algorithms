@@ -2,7 +2,7 @@
 
 ## Howe to run?
 
-1. Install bun
+1. Install bun (This is the Windows installation)
 
 ```bash
 powershell -c "irm bun.sh/install.ps1 | iex"
