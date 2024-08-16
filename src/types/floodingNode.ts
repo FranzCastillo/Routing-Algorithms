@@ -45,6 +45,20 @@ class FloodingNode extends Node {
         this.neighbors.push({ Node: neighbor, Weight: weight });
     }
 
+    getBestPath(sender: string): { path: FloodingNode[], totalWeight: number } | null {
+        if (!this.paths.has(sender)) {
+            return null;
+        }
+
+        return this.paths.get(sender)!.reduce((best, current) => {
+            if (best === null) {
+                return current;
+            }
+
+            return current.totalWeight < best.totalWeight ? current : best;
+        }, null);
+    }
+
     toString(): string {
         return `FloodingNode(${this.name})`;
     }

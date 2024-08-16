@@ -36,21 +36,23 @@ const getSelfNode = async (nodes: { [key: string]: Node } | { [key: string]: Flo
     });
 }
 
-const getNeighborCost = async (neighborName: string): Promise<number> => {
+const getGoalNode = async (nodes: { [key: string]: Node } | { [key: string]: FloodingNode }): Promise<Node | FloodingNode> => {
     return new Promise((resolve) => {
-        rl.question(`Enter the cost to ${neighborName}: `, (cost) => {
-            const parsedCost = parseInt(cost);
-            if (isNaN(parsedCost)) {
-                console.log('Invalid input. Please enter a valid integer.');
-                resolve(getNeighborCost(neighborName));
+        rl.question('Enter the name of the goal node: ', (nodeName) => {
+            if (nodes[nodeName]) {
+                resolve(nodes[nodeName]);
             } else {
-                resolve(parsedCost);
+                console.log('Invalid node name. Please try again.');
+                console.log('Valid node names are:', Object.keys(nodes).join(', '), '\n');
+                resolve(getGoalNode(nodes));
             }
         });
     });
+
 }
 
 export {
     getAlgorithm,
     getSelfNode,
+    getGoalNode,
 };

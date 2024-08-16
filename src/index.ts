@@ -1,4 +1,4 @@
-import {getAlgorithm, getSelfNode} from './utils/input';
+import {getAlgorithm, getSelfNode, getGoalNode} from './utils/input';
 import {findTopologyFile, parseTopology, findNamesFile, parseNames, parseFloodTestFile} from './utils/files';
 
 const main = async () => {
@@ -27,11 +27,19 @@ const main = async () => {
         if (!('flood' in self)) {
             console.error('Node is not a FloodingNode.');
             process.exit(1);
+        } else {
         }
+
+        const goal = await getGoalNode(nodes);
+
         self.flood();
 
-        for (const node in nodes) {
-            nodes[node].printPaths();
+        const bestPath = goal.getBestPath(self.name);
+        if (bestPath) {
+            console.log(`Best path from ${self.name} to ${goal.name}: ${bestPath.path.map(node => node.name).join(' -> ')}`);
+            console.log(`Total weight: ${bestPath.totalWeight}`);
+        } else {
+            console.log(`No path found from ${self.name} to ${goal.name}.`);
         }
 
     } else if (algorithm === 'link-state') {
