@@ -1,5 +1,6 @@
 import readline from 'readline';
 import { Node } from '../types/node';
+import {FloodingNode} from "../types/floodingNode.ts";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -21,7 +22,7 @@ const getAlgorithm = async (): Promise<string> => {
     });
 };
 
-const getSelfNode = async (nodes: { [key: string]: Node }): Promise<Node> => {
+const getSelfNode = async (nodes: { [key: string]: Node } | { [key: string]: FloodingNode }): Promise<Node | FloodingNode> => {
     return new Promise((resolve) => {
         rl.question('Enter the name of the node you are running this program on: ', (nodeName) => {
             if (nodes[nodeName]) {

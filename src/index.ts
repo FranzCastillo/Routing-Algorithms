@@ -19,11 +19,16 @@ const main = async () => {
     const algorithm = await getAlgorithm();  // Always resolves as 'flooding' or 'link-state'
     // const nodes = parseTopology(topologyFile);  // Parse the topology file to Node objects
     // parseNames(namesFile, nodes);  // Assign XMPP users to nodes
-    // const selfNode = await getSelfNode(nodes);  // Get the node the program is running on
     const nodes = parseFloodTestFile('src/configs/flood-test.json');
+    const self = await getSelfNode(nodes);  // Get the node that this program is running on
 
     if (algorithm === 'flooding') {
-        nodes['A'].flood();
+        // Check if self is a FloodingNode
+        if (!('flood' in self)) {
+            console.error('Node is not a FloodingNode.');
+            process.exit(1);
+        }
+        self.flood();
 
         for (const node in nodes) {
             nodes[node].printPaths();
