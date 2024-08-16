@@ -1,7 +1,7 @@
 class Node {
     name: string;
     xmpp_user: string;
-    neighbors: Node[];
+    neighbors: Node[] | { Node: Node, Weight: number }[];
 
     constructor(name: string) {
         this.name = name;
@@ -10,8 +10,7 @@ class Node {
     }
 
     toString(): string {
-        const neighborNames = this.neighbors.map(neighbor => neighbor.name).join(', ');
-        return `Node(name: ${this.name}, neighbors: [${neighborNames}]${this.xmpp_user ? `, xmpp_user: ${this.xmpp_user}` : ''})`;
+        return `Node(${this.name})`;
     }
 }
 
