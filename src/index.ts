@@ -1,4 +1,4 @@
-import {getAlgorithm} from './utils/input';
+import {getAlgorithm, getSelfNode} from './utils/input';
 import {findTopologyFile, parseTopology, findNamesFile, parseNames} from './utils/files';
 
 const main = async () => {
@@ -19,6 +19,7 @@ const main = async () => {
     const algorithm = await getAlgorithm();  // Always resolves as 'flooding' or 'link-state'
     const nodes = parseTopology(topologyFile);  // Parse the topology file to Node objects
     parseNames(namesFile, nodes);  // Assign XMPP users to nodes
+    const selfNode = await getSelfNode(nodes);  // Get the node the program is running on
 
     if (algorithm === 'flooding') {
         // Get the node topology

@@ -1,4 +1,5 @@
 import readline from 'readline';
+import { Node } from '../types/node';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -20,6 +21,35 @@ const getAlgorithm = async (): Promise<string> => {
     });
 };
 
+const getSelfNode = async (nodes: { [key: string]: Node }): Promise<Node> => {
+    return new Promise((resolve) => {
+        rl.question('Enter the name of the node you are running this program on: ', (nodeName) => {
+            if (nodes[nodeName]) {
+                resolve(nodes[nodeName]);
+            } else {
+                console.log('Invalid node name. Please try again.');
+                console.log('Valid node names are:', Object.keys(nodes).join(', '), '\n');
+                resolve(getSelfNode(nodes));
+            }
+        });
+    });
+}
+
+const getNeighborCost = async (neighborName: string): Promise<number> => {
+    return new Promise((resolve) => {
+        rl.question(`Enter the cost to ${neighborName}: `, (cost) => {
+            const parsedCost = parseInt(cost);
+            if (isNaN(parsedCost)) {
+                console.log('Invalid input. Please enter a valid integer.');
+                resolve(getNeighborCost(neighborName));
+            } else {
+                resolve(parsedCost);
+            }
+        });
+    });
+}
+
 export {
-    getAlgorithm
+    getAlgorithm,
+    getSelfNode,
 };

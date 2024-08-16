@@ -1,4 +1,4 @@
-import {Node} from '../algorithms/node'
+import {Node} from '../types/node.ts'
 import fs from 'fs'
 import path from 'path';
 
