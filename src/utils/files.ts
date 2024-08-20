@@ -2,6 +2,7 @@ import {Node} from '../types/node'
 import {FloodingNode} from '../types/floodingNode'
 import fs from 'fs'
 import path from 'path';
+import { LinkStateNode } from '../types/linkStateNode';
 
 const findTopologyFile = (dir: string): string | null => {
     const files = fs.readdirSync(dir);
@@ -79,6 +80,28 @@ const parseFloodTestFile = (filePath: string): { [key: string]: FloodingNode } =
     return nodes;
 };
 
+const parseLinkStateFile = (filePath: string): { [key: string]: LinkStateNode } => {
+    const data = fs.readFileSync(filePath, 'utf8');
+    const config = JSON.parse(data).config;
+
+    const nodes: { [key: string]: LinkStateNode } = {};
+
+    // Create nodes
+    for (const nodeName in config) {
+        nodes[nodeName] = new LinkStateNode(nodeName);
+    }
+
+    // Establish neighbors with weights
+    for (const nodeName in config) {
+        const node = nodes[nodeName];
+        config[nodeName].forEach((neighbor: { neighbor: string, weight: number }) => {
+            node.addNeighbor(nodes[neighbor.neighbor], neighbor.weight);
+        });
+    }
+
+    return nodes;
+}
+
 
 export {
     findTopologyFile,
@@ -86,4 +109,5 @@ export {
     parseTopology,
     parseNames,
     parseFloodTestFile,
+    parseLinkStateFile
 }
