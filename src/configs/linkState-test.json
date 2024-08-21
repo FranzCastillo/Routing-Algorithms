@@ -2,44 +2,44 @@
   "type": "topo",
   "config": {
     "A": [
-      {"neighbor": "B", "weight": 7},
-      {"neighbor": "C", "weight": 7},
+      {"neighbor": "B", "weight": 1},
+      {"neighbor": "C", "weight": 1},
       {"neighbor": "I", "weight": 1}
     ],
     "B": [
-      {"neighbor": "A", "weight": 7},
-      {"neighbor": "F", "weight": 2}
+      {"neighbor": "A", "weight": 1},
+      {"neighbor": "F", "weight": 1}
     ],
     "C": [
-      {"neighbor": "A", "weight": 7},
-      {"neighbor": "D", "weight": 5}
+      {"neighbor": "A", "weight": 1},
+      {"neighbor": "D", "weight": 1}
     ],
     "D": [
-      {"neighbor": "C", "weight": 5},
+      {"neighbor": "C", "weight": 1},
       {"neighbor": "E", "weight": 1},
       {"neighbor": "F", "weight": 1},
-      {"neighbor": "I", "weight": 6}
+      {"neighbor": "I", "weight": 1}
     ],
     "E": [
       {"neighbor": "D", "weight": 1},
-      {"neighbor": "G", "weight": 4}
+      {"neighbor": "G", "weight": 1}
     ],
     "F": [
-      {"neighbor": "B", "weight": 2},
+      {"neighbor": "B", "weight": 1},
       {"neighbor": "D", "weight": 1},
-      {"neighbor": "G", "weight": 3},
-      {"neighbor": "H", "weight": 4}
+      {"neighbor": "G", "weight": 1},
+      {"neighbor": "H", "weight": 1}
     ],
     "G": [
-      {"neighbor": "F", "weight": 3},
-      {"neighbor": "E", "weight": 4}
+      {"neighbor": "F", "weight": 1},
+      {"neighbor": "E", "weight": 1}
     ],
     "H": [
-      {"neighbor": "F", "weight": 4}
+      {"neighbor": "F", "weight": 1}
     ],
     "I": [
       {"neighbor": "A", "weight": 1},
-      {"neighbor": "D", "weight": 6}
+      {"neighbor": "D", "weight": 1}
     ]
   }
 }
