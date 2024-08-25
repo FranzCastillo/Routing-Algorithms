@@ -17,18 +17,18 @@ export function createXmppClient(nodeName: string) {
     });
     
 
-    debug(xmpp, true);
+    debug(xmpp, false);
 
     xmpp.on('error', (err) => {
-        console.error('❌ Error', err);
+        //console.error('❌ Error', err);
     });
 
     xmpp.on('offline', () => {
-        console.log('🛑 offline');
+        //console.log('🛑 offline');
     });
 
     xmpp.on('stanza', async (stanza) => {
-        console.log('⮕ Incoming stanza:', stanza.toString());
+        //console.log('⮕ Incoming stanza:', stanza.toString());
 
         if (stanza.is('message')) {
             // Handle incoming messages here
@@ -36,7 +36,7 @@ export function createXmppClient(nodeName: string) {
     });
 
     xmpp.on('online', async (address) => {
-        console.log('🟢 online as', address.toString());
+        //console.log('🟢 online as', address.toString());
 
         // Send initial presence
         await xmpp.send(xml('presence'));
