@@ -17,7 +17,7 @@ const findTopologyFile = (dir: string): string | null => {
 const findNamesFile = (dir: string): string | null => {
     const files = fs.readdirSync(dir);
     for (const file of files) {
-        if (file.startsWith('names-') && file.endsWith('.txt')) {
+        if (file.startsWith('names-') && file.endsWith('.json')) {
             return path.join(dir, file);
         }
     }
