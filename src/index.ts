@@ -1,8 +1,13 @@
 import { getAlgorithm, getSelfNode, getGoalNode } from './utils/input';
-import { findTopologyFile, parseFloodTestFile, parseLinkStateFile, findNamesFile } from './utils/files';
-import { createXmppClient } from './xmpp/xmppClient';
-import * as fs from 'fs';
-import { xml } from '@xmpp/client';
+import { 
+    findTopologyFile, 
+    findNamesFile, 
+    parseFloodTestFile, 
+    parseLinkStateFile, 
+    parseNamesFile 
+} from './utils/files';
+import { connectToXMPP, sendMessageXMPP, listenToMessages } from './xmpp/xmppClient';
+import { askQuestion } from './utils/questions';
 
 const main = async () => {
     const configPath = 'src/configs';
@@ -20,106 +25,83 @@ const main = async () => {
     }
 
     const algorithm = await getAlgorithm();  // Always resolves as 'flooding' or 'link-state'
-
     let nodes;
+
     if (algorithm === 'flooding') {
         nodes = parseFloodTestFile('src/configs/flood-test.json');
     } else if (algorithm === 'link-state') {
         nodes = parseLinkStateFile('src/configs/linkState-test.json');
     }
 
+    const nodeNamesMap = parseNamesFile(namesFile);
+
     if (nodes) {
-        const self = await getSelfNode(nodes);  // Get the node that this program is running on
+        const { node: self, xmppAddress, password } = await getSelfNode(nodes, nodeNamesMap);  // Get the node that this program is running on
 
-        // Initialize XMPP clients for all nodes
-        const xmppClients = {};
-        const nodeConfig = JSON.parse(fs.readFileSync(namesFile, 'utf8')).config;
+        // Conectar al servidor XMPP
+        const xmppClient = await connectToXMPP(xmppAddress, password);
 
-        for (const nodeName in nodeConfig) {
-            xmppClients[nodeName] = createXmppClient(nodeName);
-            xmppClients[nodeName].start().catch(console.error);
-        }
+        console.log(`🗸 Successfully logged in as ${xmppAddress}`);
 
-        const goal = await getGoalNode(nodes);
+        const action = await askQuestion('Do you want to send a message (1) or listen for incoming messages (2)? ');
 
-        if (algorithm === 'flooding') {
-            // Check if self is a FloodingNode
-            if (!('flood' in self)) {
-                console.error('Node is not a FloodingNode.');
+        if (action === '1') {
+            const goalNodeName = await askQuestion('Enter the name of the destination node: ');
+            const goal = nodes[goalNodeName];
+
+            if (!goal) {
+                console.error('Destination node not found.');
                 process.exit(1);
             }
 
-            self.flood();
+            const messagePayload = await askQuestion('Enter the message to send: ');
 
-            const bestPath = goal.getBestPath(self.name);
-            if (bestPath) {
-                console.log(`Best path from ${self.name} to ${goal.name}: ${bestPath.path.map(node => node.name).join(' -> ')}`);
-                console.log(`Total weight: ${bestPath.totalWeight}`);
-            } else {
-                console.log(`No path found from ${self.name} to ${goal.name}.`);
-            }
+            const messageData = {
+                from: xmppAddress,
+                to: nodeNamesMap[goal.name],
+                payload: messagePayload
+            };
 
-            // Send messages through the path using XMPP
-            for (let i = 0; i < bestPath.path.length - 1; i++) {
-                const fromNode = bestPath.path[i].name;
-                const toNode = bestPath.path[i + 1].name;
-                const message = {
-                    type: 'message',
-                    from: `${nodeConfig[fromNode].username}@alumchat.lol`,
-                    to: `${nodeConfig[toNode].username}@alumchat.lol`,
-                    hops: bestPath.path.length,
-                    headers: [],
-                    payload: `Message from ${fromNode} to ${toNode}`,
-                };
-
-                const messageXML = xml(
-                    'message',
-                    { type: 'chat', to: `${nodeConfig[toNode].username}@alumchat.lol` },
-                    xml('body', {}, JSON.stringify(message))
-                );
-
-                await xmppClients[fromNode].send(messageXML);
-                console.log(`Message sent from ${fromNode} to ${toNode}`);
-            }
-
-        } else if (algorithm === 'link-state') {
-            self.linkStateAlgorithm(nodes);
-            const path = self.getShortestPath(goal);
-
-            if (path) {
-                console.log(`Shortest path from ${self.name} to ${goal.name}: ${path.path.map(node => node.name).join(' -> ')}`);
-                console.log(`Total distance: ${path.distance}`);
-
-                // Send messages through the path using XMPP
-                for (let i = 0; i < path.path.length - 1; i++) {
-                    const fromNode = path.path[i].name;
-                    const toNode = path.path[i + 1].name;
-                    const message = {
-                        type: 'message',
-                        from: `${nodeConfig[fromNode].username}@alumchat.lol`,
-                        to: `${nodeConfig[toNode].username}@alumchat.lol`,
-                        hops: path.path.length,
-                        headers: [],
-                        payload: `Message from ${fromNode} to ${toNode}`,
-                    };
-
-                    const messageXML = xml(
-                        'message',
-                        { type: 'chat', to: `${nodeConfig[toNode].username}@alumchat.lol` },
-                        xml('body', {}, JSON.stringify(message))
-                    );
-
-                    await xmppClients[fromNode].send(messageXML);
-                    console.log(`Message sent from ${fromNode} to ${toNode}`);
+            if (algorithm === 'flooding') {
+                self.flood();
+                const bestPath = goal.getBestPath(self.name);
+                if (bestPath) {
+                    console.log(`Best path from ${self.name} to ${goal.name}: ${bestPath.path.map(node => node.name).join(' -> ')}`);
+                    console.log(`Total weight: ${bestPath.totalWeight}`);
+                    messageData.hops = 1;
+                    messageData.type = "message";
+                    await sendMessageXMPP(xmppClient, nodeNamesMap[bestPath.path[1].name], messageData);
+                } else {
+                    console.log(`No path found from ${self.name} to ${goal.name}.`);
                 }
-
-            } else {
-                console.log(`No path found from ${self.name} to ${goal.name}.`);
+            } else if (algorithm === 'link-state') {
+                self.linkStateAlgorithm(nodes);
+                const path = self.getShortestPath(goal);
+                if (path) {
+                    console.log(`Shortest path from ${self.name} to ${goal.name}: ${path.path.map(node => node.name).join(' -> ')}`);
+                    console.log(`Total distance: ${path.distance}`);
+                    messageData.hops = 1;
+                    messageData.type = "message";
+                    await sendMessageXMPP(xmppClient, nodeNamesMap[path.path[1].name], messageData);
+                } else {
+                    console.log(`No path found from ${self.name} to ${goal.name}.`);
+                }
             }
+
+            // Cerrar la sesión de XMPP después de enviar el mensaje
+            xmppClient.stop().then(() => {
+                console.log(`🗸 Session closed for ${xmppAddress}`);
+                process.exit();
+            }).catch(err => {
+                console.error('Error closing session:', err);
+                process.exit(1);
+            });
+
+        } else if (action === '2') {
+            console.log('Listening for incoming messages...');
+            listenToMessages(xmppClient, self.name, nodes, nodeNamesMap, xmppAddress, algorithm);
         }
     }
-}
+};
 
-main().then(() => {
-    process.exit();
-});
+main();

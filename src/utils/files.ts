@@ -1,8 +1,8 @@
-import {Node} from '../types/node'
-import {FloodingNode} from '../types/floodingNode'
-import fs from 'fs'
-import path from 'path';
+import { Node } from '../types/node';
+import { FloodingNode } from '../types/floodingNode';
 import { LinkStateNode } from '../types/linkStateNode';
+import fs from 'fs';
+import path from 'path';
 
 const findTopologyFile = (dir: string): string | null => {
     const files = fs.readdirSync(dir);
@@ -22,22 +22,18 @@ const findNamesFile = (dir: string): string | null => {
         }
     }
     return null;
-}
+};
 
 const parseTopology = (path: string): { [key: string]: Node } => {
-    const data = fs.readFileSync(path, 'utf8')  // Reads the file
-    const config = JSON.parse(data).config  // Parses the JSON data
+    const data = fs.readFileSync(path, 'utf8');
+    const config = JSON.parse(data).config;
 
-    // Keeps track of all the nodes where the key it the node's name and the value is the node object
-    const nodes: { [key: string]: Node } = {}
+    const nodes: { [key: string]: Node } = {};
 
-    // Create nodes for each key
     for (const nodeName in config) {
-        nodes[nodeName] = new Node(nodeName)
+        nodes[nodeName] = new Node(nodeName);
     }
 
-    // Establish neighbors
-    // TODO: Check if the neighbours where declared in the keys
     for (const nodeName in config) {
         const node = nodes[nodeName];
         config[nodeName].forEach((neighborName: string) => {
@@ -45,18 +41,15 @@ const parseTopology = (path: string): { [key: string]: Node } => {
         });
     }
 
-    return nodes
-}
+    return nodes;
+};
 
-const parseNames = (path: string, nodes: { [key: string]: Node }): void => {
-    // TODO: Check if the nodes where declared in the keys
-    const data = fs.readFileSync(path, 'utf8')  // Reads the file
-    const config = JSON.parse(data).config  // Parses the JSON data
+const parseNamesFile = (filePath: string): { [key: string]: string } => {
+    const data = fs.readFileSync(filePath, 'utf8');
+    const config = JSON.parse(data).config; // Accedemos a la clave 'config' dentro del JSON
+    return config;
+};
 
-    for (const nodeName in config) {
-        nodes[nodeName].xmpp_user = config[nodeName]
-    }
-}
 
 const parseFloodTestFile = (filePath: string): { [key: string]: FloodingNode } => {
     const data = fs.readFileSync(filePath, 'utf8');
@@ -64,12 +57,10 @@ const parseFloodTestFile = (filePath: string): { [key: string]: FloodingNode } =
 
     const nodes: { [key: string]: FloodingNode } = {};
 
-    // Create nodes
     for (const nodeName in config) {
         nodes[nodeName] = new FloodingNode(nodeName);
     }
 
-    // Establish neighbors with weights
     for (const nodeName in config) {
         const node = nodes[nodeName];
         config[nodeName].forEach((neighbor: { neighbor: string, weight: number }) => {
@@ -86,12 +77,10 @@ const parseLinkStateFile = (filePath: string): { [key: string]: LinkStateNode } 
 
     const nodes: { [key: string]: LinkStateNode } = {};
 
-    // Create nodes
     for (const nodeName in config) {
         nodes[nodeName] = new LinkStateNode(nodeName);
     }
 
-    // Establish neighbors with weights
     for (const nodeName in config) {
         const node = nodes[nodeName];
         config[nodeName].forEach((neighbor: { neighbor: string, weight: number }) => {
@@ -100,14 +89,13 @@ const parseLinkStateFile = (filePath: string): { [key: string]: LinkStateNode } 
     }
 
     return nodes;
-}
-
+};
 
 export {
     findTopologyFile,
     findNamesFile,
     parseTopology,
-    parseNames,
+    parseNamesFile,
     parseFloodTestFile,
     parseLinkStateFile
-}
+};

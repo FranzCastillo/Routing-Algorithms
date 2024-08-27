@@ -1,14 +1,11 @@
 {
     "type":"names",
     "config":{
-        "A": {"username": "esq21542-a", "password": "a123"},
-        "B": {"username": "esq21542-b", "password": "b123"},
-        "C": {"username": "esq21542-c", "password": "c123"},
-        "D": {"username": "esq21542-d", "password": "d123"},
-        "E": {"username": "esq21542-e", "password": "e123"},
-        "F": {"username": "esq21542-f", "password": "f123"},
-        "G": {"username": "esq21542-g", "password": "g123"},
-        "H": {"username": "esq21542-h", "password": "h123"},
-        "I": {"username": "esq21542-i", "password": "i123"}
+        "A":"grupo12@alumchat.lol",
+        "B":"grupo8@alumchat.lol",
+        "C":"grupo11@alumchat.lol",
+        "D":"grupo10@alumchat.lol",
+        "E":"grupo7@alumchat.lol",
+        "F":"grupo9@alumchat.lol"
     }
 }
