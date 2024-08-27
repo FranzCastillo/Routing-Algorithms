@@ -15,16 +15,16 @@ export async function connectToXMPP(username: string, password: string) {
     });
 
     xmpp.on('status', (status: string) => {
-        console.log(`⏳ ${status}`);
+        //console.log(`⏳ ${status}`);
     });
 
     xmpp.on('online', (address: any) => {
-        console.log(`🗸 Online as ${address.toString()}`);
+        //console.log(`🗸 Online as ${address.toString()}`);
 
         // Enviar mensaje de presencia al estar en línea
         const presence = xml('presence');
         xmpp.send(presence);
-        console.log("🗸 Presence sent to notify other clients that this node is online.");
+        //console.log("🗸 Presence sent to notify other clients that this node is online.");
     });
 
     await xmpp.start();
