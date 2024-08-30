@@ -2,22 +2,18 @@
 
 ## Howe to run?
 
-1. Install bun (This is the Windows installation)
-
+1. Clone the repository:
 ```bash
-powershell -c "irm bun.sh/install.ps1 | iex"
+git clone https://github.com/FranzCastillo/Routing-Algorithms.git
+```
+2. Access the folder:
+```bash
+cd Routing-Algorithms 
 ```
 
-2. Install the dependencies
-
+3. Run the following commands:
 ```bash
-bun install
-```
-
-3. Run the project
-
-```bash
-bun run
+docker build --rm . -t routing-algs && docker run --rm -ti routing-algs
 ```
 
 ## How to use?
